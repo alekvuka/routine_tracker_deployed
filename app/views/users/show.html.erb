@@ -1,17 +1,18 @@
 
-<h1>Hello <%=@user.name%>! </h1>
+<h1>Hello <%=@user.username%>! </h1>
 
 You have <%= link_to(@user.number_of_routines.to_s + " " + "routine".pluralize(@user.number_of_routines), user_routines_path(@user)) %>
-consisting of <%= link_to(@user.number_of_tasks.to_s + " " + "task".pluralize(@user.number_of_tasks), user_tasks_path(@user)) %>
+consisting of <%= @user.number_of_tasks.to_s + " " + "task".pluralize(@user.number_of_tasks) %>!
+You can create more routines <%= link_to('here', new_user_routine_path(@user))%>!
 <br>
 <br>
 <br>
-<h3>_____________________________CURRENT_ROUTINE_______________________________</h3>
+<h3>_____________________________CURRENT_ROUTINES_______________________________</h3>
 
 
 <% if !@user.current_routine.empty?%>
       <% @user.current_routine.each do |routine|   %>
-        
+
         <% if UserRoutine.find_by(user: @user, routine: routine).priority == 'high' %>
             <b><%=routine.name%> (<%=Routine.convert_from_24(routine.start_time)%> to <%=Routine.convert_from_24(routine.end_time)%>)</b><br>
         <%else%>
@@ -31,11 +32,15 @@ consisting of <%= link_to(@user.number_of_tasks.to_s + " " + "task".pluralize(@u
 <br>
 <br>
 <br>
-<h3>_____________________________UPCOMING_ROUTINE_______________________________</h3>
+<h3>_____________________________UPCOMING_ROUTINES_______________________________</h3>
 
 
 <% if !@user.upcoming_routine.nil? &&  @user.upcoming_routine.class.to_s != "Array"%>
     <%= link_to(@user.upcoming_routine.name, routine_path(@user.upcoming_routine))%> ( <%=Routine.convert_from_24(@user.upcoming_routine.start_time)%> to <%=Routine.convert_from_24(@user.upcoming_routine.end_time)%> )  <br>
+<% elsif !@user.upcoming_routine.nil? &&  @user.upcoming_routine.class.to_s == "Array"%>
+      <%@user.upcoming_routine.each do |rout|%>
+          <%= link_to(rout.name, routine_path(rout))%> ( <%=Routine.convert_from_24(rout.start_time)%> to <%=Routine.convert_from_24(rout.end_time)%> )  <br>
+      <%end%>
 <% else %>
     You do not have an upcoming routine for the day! <br>
     You can browse exiting ones <%= link_to('here', routines_path)%> or create your own <%= link_to('here', new_user_routine_path(@user))%>!
